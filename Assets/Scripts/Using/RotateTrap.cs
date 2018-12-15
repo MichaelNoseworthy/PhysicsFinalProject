@@ -4,17 +4,18 @@ using UnityEngine;
 
 public class RotateTrap : MonoBehaviour {
 
-    public float rotationspeed;
+    public float rotationspeedx;
+    public float rotationspeedy;
+    public float rotationspeedz;
 
 	// Use this for initialization
 	void Start () {
-		
-	}
+    }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
 
-        this.transform.Rotate(new Vector3(0, rotationspeed, 0));
+        this.transform.Rotate(new Vector3(rotationspeedx, rotationspeedy, rotationspeedz));
 		
 	}
 }

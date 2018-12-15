@@ -9,10 +9,11 @@ public class Player : MonoBehaviour
     [SerializeField] static public float pushForce = 0.0f; //amount to push the player
     private float m_elapsedTime = 0.0f;
 
-    private float JumpPowerupIncrease = 11500;
+    private float JumpPowerupIncrease = 10700;
     public bool powerupActive = false;
     private bool removePowerUp = false;
 
+    bool PAUSEGAME;
 
     private Rigidbody m_rb;
 
@@ -28,6 +29,8 @@ public class Player : MonoBehaviour
         m_rb = GetComponent<Rigidbody>();
         m_Material = GetComponent<Renderer>().material;
         m_Material.color = Color.red;
+        Time.timeScale = 1;
+        PAUSEGAME = false;
     }
 
     // Update is called once per frame
@@ -81,8 +84,11 @@ public class Player : MonoBehaviour
 
     void CheckInput()
     {
-        MovePlayer();
-        RotatePlayer();
+        if (PAUSEGAME == false)
+        {
+            MovePlayer();
+            RotatePlayer();
+        }
     }
 
     void MovePlayer()
@@ -110,6 +116,8 @@ public class Player : MonoBehaviour
         if (canjump == true)
         if (Input.GetKey(KeyCode.Space))
         {
+                //if (transform.parent.name == "Movator")
+                    transform.parent = null;
                 if (powerupActive)
                     m_rb.AddForce(transform.up * (JumpPowerupIncrease + 2000), ForceMode.Force);
                 else
@@ -135,7 +143,7 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("ground") || collision.gameObject.CompareTag("PowerUp"))// if the player is touching the gameobject with the Tag ground, the boolean become true
+        if (collision.gameObject.CompareTag("ground") || collision.gameObject.CompareTag("PowerUp") || collision.gameObject.CompareTag("Movator1") || collision.gameObject.CompareTag("Movator2"))// if the player is touching the gameobject with the Tag ground, the boolean become true
         {
             canjump = true;
         }
@@ -146,6 +154,13 @@ public class Player : MonoBehaviour
 
         if (collision.gameObject.CompareTag("JumpPad"))
             Catapult();
+
+        if (collision.transform.name == "Movator1")
+            //gameObject.CompareTag("Movator1"))
+            transform.parent = collision.transform.parent;
+
+        if (collision.transform.name == "Movator2")
+            transform.parent = collision.transform.parent;
 
         if (collision.gameObject.CompareTag("InitialFall"))
         {
@@ -161,6 +176,13 @@ public class Player : MonoBehaviour
             m_rb.angularVelocity = Vector3.zero;
             transform.position = GameObject.Find("PlayerInitialSpawn").GetComponent<Transform>().position;
             transform.rotation = GameObject.Find("PlayerInitialSpawn").GetComponent<Transform>().rotation;
+        }
+        if (collision.gameObject.CompareTag("LavaPit2"))
+        {
+            m_rb.velocity = Vector3.zero;
+            m_rb.angularVelocity = Vector3.zero;
+            transform.position = GameObject.Find("PlayerFourthSpawn").GetComponent<Transform>().position;
+            transform.rotation = GameObject.Find("PlayerFourthSpawn").GetComponent<Transform>().rotation;
         }
 
         if (collision.gameObject.CompareTag("SecondFallArea"))
@@ -178,6 +200,16 @@ public class Player : MonoBehaviour
             m_rb.angularVelocity = Vector3.zero;
             transform.position = GameObject.Find("PlayerThirdSpawn").GetComponent<Transform>().position;
             transform.rotation = GameObject.Find("PlayerThirdSpawn").GetComponent<Transform>().rotation;
+        }
+
+        if (collision.gameObject.CompareTag("FourthFallArea"))
+        {
+
+            transform.parent = null;
+            m_rb.velocity = Vector3.zero;
+            m_rb.angularVelocity = Vector3.zero;
+            transform.position = GameObject.Find("PlayerFourthSpawn").GetComponent<Transform>().position;
+            transform.rotation = GameObject.Find("PlayerFourthSpawn").GetComponent<Transform>().rotation;
         }
 
         if (collision.gameObject.CompareTag("RotationTrap"))
@@ -198,11 +230,41 @@ public class Player : MonoBehaviour
             m_Material.color = Color.green;
         }
 
+        if (collision.gameObject.CompareTag("Projectile"))
+        {
+
+            transform.parent = null;
+            m_rb.velocity = Vector3.zero;
+            m_rb.angularVelocity = Vector3.zero;
+            transform.position = GameObject.Find("PlayerFourthSpawn").GetComponent<Transform>().position;
+            transform.rotation = GameObject.Find("PlayerFourthSpawn").GetComponent<Transform>().rotation;
+        }
+
+        if (collision.gameObject.CompareTag("WinSpot"))
+        {
+            GameObject.Find("ForceBar").GetComponent<ForceBar>().WinGame();
+            m_rb.velocity = Vector3.zero;
+            m_rb.angularVelocity = Vector3.zero;
+            //transform.position = GameObject.Find("PlayerInitialSpawn").GetComponent<Transform>().position;
+            //transform.rotation = GameObject.Find("PlayerInitialSpawn").GetComponent<Transform>().rotation;
+            PAUSEGAME = true;
+        }
+
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionExit(Collision collision)
     {
-        
+        if (collision.gameObject.CompareTag("Movator1"))// && canjump != false)
+        {
+            m_rb.velocity = Vector3.zero;
+            transform.SetParent(transform);
+        }
+
+        if (collision.gameObject.CompareTag("Movator2"))// && canjump != false)
+        {
+            m_rb.velocity = Vector3.zero;
+            transform.SetParent(transform);
+        }
     }
 
 

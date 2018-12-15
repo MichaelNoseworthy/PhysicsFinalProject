@@ -24,6 +24,12 @@ TagManager:
   - ThirdFallArea
   - RotationTrap
   - PowerUp
+  - FourthFallArea
+  - LavaPit2
+  - Movator1
+  - Movator2
+  - Projectile
+  - WinSpot
   layers:
   - Default
   - TransparentFX
